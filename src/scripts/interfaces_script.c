@@ -601,6 +601,7 @@ VSS_HANDLER(interface_adc_config)
 
 VSS_HANDLER(interface_adc_get)
 {
+/* 	// re use old vesion make it ok
 	uint8_t channel;
 	uint32_t voltage, max;
 	struct INTERFACES_INFO_T *ifs = NULL;
@@ -609,7 +610,7 @@ VSS_HANDLER(interface_adc_get)
 	VSS_CHECK_ARGC(2);
 	INTERFACE_ASSERT(IFS_ADC, "adc");
 	
-	max = ifs->adc.get_max_value(0);
+	max = ifs->adc.get_max_value(0); // not work
 	if (!max)
 	{
 		return VSFERR_NONE;
@@ -628,7 +629,24 @@ VSS_HANDLER(interface_adc_get)
 	}
 	
 	LOG_INFO(INFOMSG_VOLTAGE, "ADC result", voltage * 3.3 / max);
+	return VSFERR_NONE; 
+	*/
+	// old vesion for test
+	uint8_t channel;
+	uint32_t voltage;
+	struct INTERFACES_INFO_T *ifs = NULL;
+	
+	VSS_CHECK_ARGC(2);
+	INTERFACE_ASSERT(IFS_ADC, "adc");
+	
+	channel = (uint8_t)strtoul(argv[1], NULL, 0);
+	if (ifs->adc.sample(0, channel, &voltage) || ifs->peripheral_commit())
+	{
+		return VSFERR_FAIL;
+	}
+	LOG_INFO(INFOMSG_VOLTAGE, "ADC result", voltage * 3.3 / 0xFFF);
 	return VSFERR_NONE;
+	// end this
 }
 #endif
 
